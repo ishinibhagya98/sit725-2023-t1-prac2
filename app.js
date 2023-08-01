@@ -5,6 +5,12 @@ const port = 3000;
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
+let todos = [
+    { id: 1, text: 'Buy groceries' },
+    { id: 2, text: 'Clean the house' },
+    { id: 3, text: 'Read a book' },
+];
+
 // Route to handle addition of two numbers
 app.get('/add', (req, res) => {
     const { num1, num2 } = req.query;
@@ -41,6 +47,23 @@ app.post('/calculate', (req, res) => {
     }
 
     res.json({ result });
+});
+
+// Route to update a todo
+app.put('/todos/:id', (req, res) => {
+    const { id } = req.params;
+    const { text } = req.body;
+    if (!text) {
+        return res.status(400).json({ error: 'Please provide a text for the todo update.' });
+    }
+
+    const todoToUpdate = todos.find((todo) => todo.id === Number(id));
+    if (!todoToUpdate) {
+        return res.status(404).json({ error: 'Todo not found.' });
+    }
+
+    todoToUpdate.text = text;
+    res.json({ todo: todoToUpdate });
 });
 
 // Start the server
